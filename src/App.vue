@@ -12,14 +12,18 @@
       </div>
       <div><img class="photo" v-bind:class="{show: showNim}" src="./assets/nim.png" aria-hidden /></div>
     </header>
-    <h2 v-if="definitions.length">Definition</h2>
-    <ul>
-      <li v-for="(def, i) in definitions" :key="i">"{{ def }}"</li>
-    </ul>
-    <h2 v-if="synonyms.length">{{showSuggestions ? 'Word not found. Did you mean...?' : 'Synonyms'}}</h2>
-    <ul class="synonym-list">
-      <li class="synonym" v-for="(word, i) in synonyms" :key="i" v-on:click="updateSearch">{{ word }}</li>
-    </ul>
+    <main>
+      <img src="./assets/spinner.gif" v-if="loading" class="spinner"/>
+      <h2 v-if="definitions.length">Definition</h2>
+      <ul>
+        <li v-for="(def, i) in definitions" :key="i">"{{ def }}"</li>
+      </ul>
+      <h2 v-bind:class="{error: showSuggestions}" v-if="synonyms.length">{{showSuggestions ? 'Word not found. Did you mean...?' : 'Synonyms'}}</h2>
+      <h2 v-bind:class="{error: error}" v-if="error">Invalid search term.</h2>
+      <ul class="synonym-list">
+        <li class="synonym" v-for="(word, i) in synonyms" :key="i" v-on:click="updateSearch">{{ word }}</li>
+      </ul>
+    </main>
   </div>
 </template>
 
@@ -30,6 +34,8 @@ export default {
   name: 'app',
   data() {
     return {
+      loading: false,
+      error: '',
       searchTerm: '',
       definitions: [],
       synonyms: [],
@@ -45,14 +51,17 @@ export default {
       this.showSuggestions = false;
       this.definitions = [];
       this.synonyms = [];
+      this.loading = true;
+      this.error = '';
 
-      const res = await fetch(`${process.env.VUE_APP_ROOT_URL}/${this.searchTerm}?key=${process.env.local.VUE_APP_API_KEY}`)
+      const res = await fetch(`${process.env.VUE_APP_ROOT_URL}/${this.searchTerm}?key=${process.env.VUE_APP_API_KEY}`)
       const data = await res.json();
+      console.log(data)
 
       if (typeof data[0] === 'string') {
         this.showSuggestions = true;
         this.synonyms = data;
-      } else {
+      } else if (data.length) {
         this.definitions = data[0].shortdef;
         this.synonyms = data[0].meta.syns.reduce((acc, arr) => {
           arr.forEach(syn => {
@@ -60,7 +69,10 @@ export default {
           })
           return acc;
         }, []);
+      } else {
+        this.error = true;
       }
+      this.loading = false;
     },
 
     updateSearch(e) {
@@ -93,6 +105,11 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 30px;
+}
+
+.spinner {
+  height: 100px;
+  margin-top: 50px;
 }
 
 header {
@@ -165,6 +182,7 @@ ul {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  margin-top: 25px;
 }
 
 .synonym {
@@ -183,6 +201,10 @@ ul {
 
 .show {
   visibility: visible;
+}
+
+.error {
+  color: rgb(131, 22, 22);
 }
 
 </style>
