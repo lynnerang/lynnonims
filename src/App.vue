@@ -46,7 +46,7 @@ export default {
       this.definitions = [];
       this.synonyms = [];
 
-      const res = await fetch(`${process.env.VUE_APP_ROOT_URL}/${this.searchTerm}?key=${process.env.local.VUE_APP_API_KEY}`)
+      const res = await fetch(`${process.env.VUE_APP_ROOT_URL}/${this.searchTerm}?key=${process.env.VUE_APP_API_KEY}`)
       const data = await res.json();
 
       if (typeof data[0] === 'string') {
