@@ -19,6 +19,7 @@
         <li v-for="(def, i) in definitions" :key="i">"{{ def }}"</li>
       </ul>
       <h2 v-bind:class="{error: showSuggestions}" v-if="synonyms.length">{{showSuggestions ? 'Word not found. Did you mean...?' : 'Synonyms'}}</h2>
+      <h2 v-bind:class="{error: error}" v-if="error">Invalid search term.</h2>
       <ul class="synonym-list">
         <li class="synonym" v-for="(word, i) in synonyms" :key="i" v-on:click="updateSearch">{{ word }}</li>
       </ul>
@@ -34,6 +35,7 @@ export default {
   data() {
     return {
       loading: false,
+      error: '',
       searchTerm: '',
       definitions: [],
       synonyms: [],
@@ -50,14 +52,16 @@ export default {
       this.definitions = [];
       this.synonyms = [];
       this.loading = true;
+      this.error = '';
 
       const res = await fetch(`${process.env.VUE_APP_ROOT_URL}/${this.searchTerm}?key=${process.env.VUE_APP_API_KEY}`)
       const data = await res.json();
+      console.log(data)
 
       if (typeof data[0] === 'string') {
         this.showSuggestions = true;
         this.synonyms = data;
-      } else {
+      } else if (data.length) {
         this.definitions = data[0].shortdef;
         this.synonyms = data[0].meta.syns.reduce((acc, arr) => {
           arr.forEach(syn => {
@@ -65,6 +69,8 @@ export default {
           })
           return acc;
         }, []);
+      } else {
+        this.error = true;
       }
       this.loading = false;
     },
