@@ -18,7 +18,7 @@
       <ul>
         <li v-for="(def, i) in definitions" :key="i">"{{ def }}"</li>
       </ul>
-      <h2 v-if="synonyms.length">{{showSuggestions ? 'Word not found. Did you mean...?' : 'Synonyms'}}</h2>
+      <h2 v-bind:class="{error: showSuggestions}" v-if="synonyms.length">{{showSuggestions ? 'Word not found. Did you mean...?' : 'Synonyms'}}</h2>
       <ul class="synonym-list">
         <li class="synonym" v-for="(word, i) in synonyms" :key="i" v-on:click="updateSearch">{{ word }}</li>
       </ul>
@@ -176,6 +176,7 @@ ul {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  margin-top: 25px;
 }
 
 .synonym {
@@ -194,6 +195,10 @@ ul {
 
 .show {
   visibility: visible;
+}
+
+.error {
+  color: rgb(131, 22, 22);
 }
 
 </style>
