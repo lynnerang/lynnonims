@@ -12,14 +12,17 @@
       </div>
       <div><img class="photo" v-bind:class="{show: showNim}" src="./assets/nim.png" aria-hidden /></div>
     </header>
-    <h2 v-if="definitions.length">Definition</h2>
-    <ul>
-      <li v-for="(def, i) in definitions" :key="i">"{{ def }}"</li>
-    </ul>
-    <h2 v-if="synonyms.length">{{showSuggestions ? 'Word not found. Did you mean...?' : 'Synonyms'}}</h2>
-    <ul class="synonym-list">
-      <li class="synonym" v-for="(word, i) in synonyms" :key="i" v-on:click="updateSearch">{{ word }}</li>
-    </ul>
+    <main>
+      <img src="./assets/spinner.gif" v-if="loading" class="spinner"/>
+      <h2 v-if="definitions.length">Definition</h2>
+      <ul>
+        <li v-for="(def, i) in definitions" :key="i">"{{ def }}"</li>
+      </ul>
+      <h2 v-if="synonyms.length">{{showSuggestions ? 'Word not found. Did you mean...?' : 'Synonyms'}}</h2>
+      <ul class="synonym-list">
+        <li class="synonym" v-for="(word, i) in synonyms" :key="i" v-on:click="updateSearch">{{ word }}</li>
+      </ul>
+    </main>
   </div>
 </template>
 
@@ -30,6 +33,7 @@ export default {
   name: 'app',
   data() {
     return {
+      loading: false,
       searchTerm: '',
       definitions: [],
       synonyms: [],
@@ -45,6 +49,7 @@ export default {
       this.showSuggestions = false;
       this.definitions = [];
       this.synonyms = [];
+      this.loading = true;
 
       const res = await fetch(`${process.env.VUE_APP_ROOT_URL}/${this.searchTerm}?key=${process.env.VUE_APP_API_KEY}`)
       const data = await res.json();
@@ -61,6 +66,7 @@ export default {
           return acc;
         }, []);
       }
+      this.loading = false;
     },
 
     updateSearch(e) {
@@ -93,6 +99,11 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 30px;
+}
+
+.spinner {
+  height: 100px;
+  margin-top: 50px;
 }
 
 header {
