@@ -1,16 +1,44 @@
 <template>
   <div id="app">
     <header>
-      <div><img class="photo" v-bind:class="{show: showLynne}" src="./assets/lynne.png" aria-hidden/></div>
+      <div>
+        <img 
+          class="photo" 
+          v-bind:class="{show: showLynne}" 
+          src="./assets/lynne.png" 
+          aria-hidden
+        />
+      </div>
       <div>
         <h1>LYNNONIMS</h1>
-        <img alt="Vue logo" src="./assets/dictionary.png" aria-hidden style="width: 160px">
+        <img 
+          alt="Vue logo" 
+          src="./assets/dictionary.png" 
+          aria-hidden 
+          style="width: 160px"
+        >
         <form @submit.prevent="getSynonyms">
-          <input class="txt-input" v-model="searchTerm" placeholder="Search a word for synonyms..."/>
-          <input class="search-btn" value="Search" type="submit" v-bind:disabled="!searchTerm"/>
+          <input 
+            class="txt-input" 
+            v-model="searchTerm" 
+            placeholder="Search a word for synonyms..."
+          />
+          <input 
+            class="search-btn" 
+            value="Search" 
+            type="submit" 
+            :disabled="!searchTerm" 
+          />
         </form>
       </div>
-      <div><img class="photo" v-bind:class="{show: showNim}" src="./assets/nim.png" aria-hidden /></div>
+      <div>
+        <img 
+          class="photo" 
+          v-bind:class="{show: showNim}" 
+          src="./assets/nim.png" 
+          aria-hidden 
+        />
+      </div>
     </header>
     <main>
       <img src="./assets/spinner.gif" v-if="loading" class="spinner"/>
@@ -18,10 +46,19 @@
       <ul>
         <li v-for="(def, i) in definitions" :key="i">"{{ def }}"</li>
       </ul>
-      <h2 v-bind:class="{error: showSuggestions}" v-if="synonyms.length">{{showSuggestions ? 'Word not found. Did you mean...?' : 'Synonyms'}}</h2>
+      <h2 v-bind:class="{error: showSuggestions}" v-if="synonyms.length">
+        {{showSuggestions ? 'Word not found. Did you mean...?' : 'Synonyms'}}
+      </h2>
       <h2 v-bind:class="{error: error}" v-if="error">Invalid search term.</h2>
       <ul class="synonym-list">
-        <li class="synonym" v-for="(word, i) in synonyms" :key="i" v-on:click="updateSearch">{{ word }}</li>
+        <li 
+          class="synonym" 
+          v-for="(word, i) in synonyms" 
+          :key="i" 
+          v-on:click="updateSearch"
+        >
+          {{ word }}
+        </li>
       </ul>
     </main>
   </div>
@@ -56,7 +93,6 @@ export default {
 
       const res = await fetch(`${process.env.VUE_APP_ROOT_URL}/${this.searchTerm}?key=${process.env.VUE_APP_API_KEY}`)
       const data = await res.json();
-      console.log(data)
 
       if (typeof data[0] === 'string') {
         this.showSuggestions = true;
@@ -174,7 +210,11 @@ ul {
   cursor: pointer;
 }
 
-.search-btn:hover {
+.search-btn:disabled {
+  background: gray!important;
+}
+
+.search-btn:hover:enabled {
   background: #2d3134;
 }
 
