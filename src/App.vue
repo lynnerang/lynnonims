@@ -1,53 +1,14 @@
 <template>
   <div id="app">
-    <header>
-      <div>
-        <img 
-          class="photo" 
-          v-bind:class="{show: showLynne}" 
-          src="./assets/lynne.png" 
-          aria-hidden
-        />
-      </div>
-      <div>
-        <h1>LYNNONIMS</h1>
-        <img 
-          alt="Vue logo" 
-          src="./assets/dictionary.png" 
-          aria-hidden 
-          style="width: 160px"
-        >
-        <form @submit.prevent="getSynonyms">
-          <input 
-            class="txt-input" 
-            v-model="searchTerm" 
-            placeholder="Search a word for synonyms..."
-          />
-          <input 
-            class="search-btn" 
-            value="Search" 
-            type="submit" 
-            :disabled="!searchTerm" 
-          />
-        </form>
-      </div>
-      <div>
-        <img 
-          class="photo" 
-          v-bind:class="{show: showNim}" 
-          src="./assets/nim.png" 
-          aria-hidden 
-        />
-      </div>
-    </header>
+    <AppHeader @onSearch="getSynonyms" :clickedTerm="clickedTerm" />
     <main>
       <img src="./assets/spinner.gif" v-if="loading" class="spinner"/>
       <h2 v-if="definitions.length">Definition</h2>
       <ul>
         <li v-for="(def, i) in definitions" :key="i">"{{ def }}"</li>
       </ul>
-      <h2 v-bind:class="{error: showSuggestions}" v-if="synonyms.length">
-        {{showSuggestions ? 'Word not found. Did you mean...?' : 'Synonyms'}}
+      <h2 v-bind:class="{error: suggested}" v-if="synonyms.length">
+        {{suggested ? 'Word not found. Did you mean...?' : 'Synonyms'}}
       </h2>
       <h2 v-bind:class="{error: error}" v-if="error">Invalid search term.</h2>
       <ul class="synonym-list">
@@ -65,37 +26,40 @@
 </template>
 
 <script>
-import { setTimeout } from 'timers';
+import AppHeader from './components/AppHeader'
 
 export default {
   name: 'app',
+  components: {
+    AppHeader
+  },
   data() {
     return {
       loading: false,
+      clickedTerm: '',
       error: '',
-      searchTerm: '',
       definitions: [],
       synonyms: [],
-      showSuggestions: false,
-      showLynne: false,
-      showNim: false
+      suggested: false,
     }
   },
   methods: {
-    getSynonyms: async function() {
-      this.flashImages();
-
-      this.showSuggestions = false;
+    resetData() {
+      this.suggested = false;
       this.definitions = [];
       this.synonyms = [];
       this.loading = true;
       this.error = '';
+    },
 
-      const res = await fetch(`${process.env.VUE_APP_ROOT_URL}/${this.searchTerm}?key=${process.env.VUE_APP_API_KEY}`)
+    getSynonyms: async function(term) {
+      this.resetData();
+
+      const res = await fetch(`${process.env.VUE_APP_ROOT_URL}/${term}?key=${process.env.VUE_APP_API_KEY}`)
       const data = await res.json();
 
       if (typeof data[0] === 'string') {
-        this.showSuggestions = true;
+        this.suggested = true;
         this.synonyms = data;
       } else if (data.length) {
         this.definitions = data[0].shortdef;
@@ -112,17 +76,8 @@ export default {
     },
 
     updateSearch(e) {
-      this.searchTerm = e.target.innerText;
-      this.getSynonyms();
-    },
-
-    flashImages() {
-      this.showLynne = true;
-      setTimeout(() => {
-        this.showLynne = false;
-        this.showNim = true;
-      }, 500);
-      setTimeout(() => this.showNim = false, 1000);
+      this.getSynonyms(e.target.innerText);
+      this.clickedTerm = e.target.innerText;
     }
   }
 }
@@ -146,76 +101,6 @@ export default {
 .spinner {
   height: 100px;
   margin-top: 50px;
-}
-
-header {
-  display: flex;
-  width: 100vw;
-  justify-content: space-around;
-}
-
-.photo {
-  height: 300px;
-  visibility: hidden;
-}
-
-h1 {
-  margin-bottom: 10px;
-  margin-top: 0;
-  font-size: 46px;
-  font-family: 'BioRhyme', serif;
-  font-weight: 400;
-}
-
-form {
-  margin-top: 20px;
-  align-items: center;
-}
-
-input {
-  height: 36px;
-  box-sizing: border-box;
-  font-size: 18px;
-}
-
-h2 {
-  margin-bottom: -10px;
-  margin-top: 25px;
-  font-size: 22px;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-.txt-input {
-  border-radius: 5px 0 0 5px;
-  padding-left: 8px;
-  width: 250px;
-}
-
-::placeholder {
-  font-style: italic;
-  color: rgb(169, 169, 169);
-  font-size: 15px;
-}
-
-.search-btn {
-  height: 36px;
-  border-radius: 0 5px 5px 0;
-  border: none;
-  background: #009EA0;
-  color: white;
-  cursor: pointer;
-}
-
-.search-btn:disabled {
-  background: gray!important;
-}
-
-.search-btn:hover:enabled {
-  background: #2d3134;
 }
 
 .synonym-list {
