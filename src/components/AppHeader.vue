@@ -9,14 +9,14 @@
       <form @submit.prevent="handleSearch">
         <input
           class="txt-input"
-          v-model="searchTerm"
+          v-model="inputVal"
           placeholder="Search a word for synonyms..."
         />
         <input
           class="search-btn"
           value="Search"
           type="submit"
-          :disabled="!searchTerm"
+          :disabled="!inputVal"
         />
       </form>
     </div>
@@ -30,15 +30,15 @@
 
 export default {
   name: "AppHeader",
-  props: ['clickedTerm'],
+  props: ['term'],
   watch: { 
-    clickedTerm: function(newVal) { 
-      this.searchTerm = newVal;
+    term: function(newVal) { 
+      this.inputVal = newVal;
     }
   },
   data() {
     return {
-      searchTerm: '',
+      inputVal: '',
       showLynne: false,
       showNim: false
     };
@@ -46,7 +46,7 @@ export default {
   methods: {
     handleSearch: function() {
       this.flashImages();
-      this.$emit("onSearch", this.searchTerm);
+      this.$emit("onSearch", this.inputVal);
     },
     flashImages() {
       this.showLynne = true;
@@ -63,6 +63,7 @@ export default {
 </script>
 
 <style>
+
 header {
   display: flex;
   width: 100vw;
