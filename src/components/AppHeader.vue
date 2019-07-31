@@ -137,4 +137,34 @@ ul {
 .error {
   color: rgb(131, 22, 22);
 }
+
+@media screen and (max-width: 900px) {
+
+  body {
+    margin: 0;
+    width: 100vw;
+    box-sizing: border-box;
+  }
+
+  .photo,
+  .show {
+    display: none;
+  }
+
+  h1 {
+    font-size: 36px;
+  }
+
+  .txt-input {
+    width: 200px;
+  }
+
+  .search-btn {
+    font-size: 16px;
+  }
+
+  ::placeholder {
+    font-size: 14px;
+  }
+}
 </style>

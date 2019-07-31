@@ -3,7 +3,7 @@
     <img src="../assets/spinner.gif" v-if="loading" class="spinner"/>
     <h2 v-if="defs.length">Definition</h2>
     <ul>
-      <li v-for="(def, i) in defs" :key="i">"{{ def }}"</li>
+      <li class="defs" v-for="(def, i) in defs" :key="i">"{{ def }}"</li>
     </ul>
     <h2 v-if="!loading" v-bind:class="{error: error}">
       {{error ? error : 'Synonyms'}}
@@ -41,6 +41,10 @@ export default {
   margin-top: 50px;
 }
 
+.defs {
+  margin: 5px;
+}
+
 .synonym-list {
   display: flex;
   flex-wrap: wrap;
@@ -70,4 +74,13 @@ export default {
   color: rgb(131, 22, 22);
 }
 
+
+@media screen and (max-width: 900px) {
+
+  .synonym {
+    font-size: 20px;
+    margin: 10px 20px;
+  }
+
+}
 </style>
